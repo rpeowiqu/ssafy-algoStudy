@@ -10,7 +10,7 @@ public class Main2007 {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		
+
 		int testCase = Integer.parseInt(br.readLine());
 		for(int t=0; t < testCase; t++) {
 			String wordRepeat = br.readLine();
@@ -28,12 +28,12 @@ public class Main2007 {
 					}
 				}
 			}
-			
+
 			if(!end) {
 				bw.write("#" + (t + 1) + " " + 30 + "\n");
 			}
 		}
-		
+
 		bw.flush();
 		bw.close();
 	}

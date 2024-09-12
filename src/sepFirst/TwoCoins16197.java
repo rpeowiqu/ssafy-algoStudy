@@ -15,8 +15,6 @@ public class TwoCoins16197 {
         int row = Integer.parseInt(st.nextToken());
         int col = Integer.parseInt(st.nextToken());
         char[][] desk = new char[row][col];
-        boolean[][] visited1 = new boolean[row][col];
-        boolean[][] visited2 = new boolean[row][col];
         int[] dx = {0, 1, 0, -1};
         int[] dy = {1, 0, -1, 0};
         int[] idx = new int[4];
@@ -34,8 +32,6 @@ public class TwoCoins16197 {
         Queue<int[]> queue = new LinkedList<>();
         queue.offer(new int[] {idx[0], idx[1]});
         queue.offer(new int[] {idx[2], idx[3]});
-        visited1[idx[0]][idx[1]] = true;
-        visited2[idx[2]][idx[3]] = true;
         int time = 0;
         bfs: while(!queue.isEmpty()) {
         	time++;
@@ -54,7 +50,6 @@ public class TwoCoins16197 {
         			nsec[0] = second[0] + dy[j];
         			nfir[1] = first[1] + dx[j];
         			nsec[1] = second[1] + dx[j];
-        			if(check(nfir, row, col) && visited1[nfir[0]][nfir[1]] || check(nsec, row, col) && visited2[nsec[0]][nsec[1]]) continue;
         			if(!check(nfir, row, col) && !check(nsec, row, col)) continue;
         			if(check(nfir, row, col) ^ check(nsec, row, col)) {
         				System.out.println(time);
@@ -62,19 +57,16 @@ public class TwoCoins16197 {
         			}
         			
         			if(check(nfir, row, col) && desk[nfir[0]][nfir[1]] == '#') {
-        				nfir[0] -= dy[j];
-        				nfir[1] -= dx[j];
-        			}
+        				queue.offer(first);
+        			} else {
+                        queue.offer(nfir);
+                    }
         			
         			if(check(nsec, row, col) && desk[nsec[0]][nsec[1]] == '#') {
-        				nsec[0] -= dy[j];
-        				nsec[1] -= dx[j];
-        			}
-        			
-        			if(Arrays.equals(nfir, nsec)) continue;
-        			
-        			queue.offer(nfir);
-        			queue.offer(nsec);
+        				queue.offer(second);
+        			} else {
+                        queue.offer(nsec);
+                    }
         		}
         	}
         }

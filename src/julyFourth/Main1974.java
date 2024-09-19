@@ -1,4 +1,4 @@
-package sepFourth;
+package julyFourth;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

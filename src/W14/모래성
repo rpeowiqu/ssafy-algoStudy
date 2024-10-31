@@ -1,0 +1,56 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.StringTokenizer;
+import java.util.Queue;
+
+class Main {
+    static int H, W;
+    static int[][] beach;
+    static int[] dx = {0, -1, -1, -1, 0, 1, 1, 1};
+    static int[] dy = {-1, -1, 0, 1, 1, 1, 0, -1};
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        H = Integer.parseInt(st.nextToken());
+        W = Integer.parseInt(st.nextToken());
+        beach = new int[H][W];
+        Queue<int[]> queue = new ArrayDeque<>();
+        for(int i=0; i < H; i++) {
+            String line = br.readLine();
+            for(int j=0; j < W; j++) {
+                if(line.charAt(j) == '.') queue.add(new int[] {i, j});
+                else beach[i][j] = line.charAt(j) - '0';
+            }
+        }
+
+        int time = 0;
+        while(!queue.isEmpty()) {
+            time++;
+            int size = queue.size();
+            for(int i=0; i < size; i++) {
+                int[] cur = queue.poll();
+                for(int j=0; j < 8; j++) {
+                    int nextY = cur[0] + dy[j];
+                    int nextX = cur[1] + dx[j];
+                    if(nextY >= 0 && nextY < H && nextX >= 0 && nextX < W) {
+                        if(beach[nextY][nextX] > 0) {
+                            beach[nextY][nextX]--;
+                            if(beach[nextY][nextX] == 0) {
+                                queue.add(new int[] {nextY, nextX});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println(--time);
+    }
+
+    // static boolean check(int[] arr) {
+    //     return arr[0] >= 0 && arr[0] < H && arr[1] >= 0 && arr[1] < W;
+    // }
+}

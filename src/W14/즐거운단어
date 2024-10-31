@@ -1,0 +1,72 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+class Main {
+    static int[] idxs;
+    static int lNum, idx;
+    static long ans;
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+
+        String line = br.readLine();
+        idxs = new int[10];
+        idx = 0;
+        lNum = 0;
+        for(int i=0; i < line.length(); i++) {
+            if(isVowel(line.charAt(i))) sb.append('V');
+            else if(line.charAt(i) == '_') {
+                sb.append('_');
+                idxs[idx++] = i;
+            } else {
+                if(line.charAt(i) == 'L') lNum++;
+                sb.append('C');
+            }
+        }
+        ans = 0L;
+
+        find(0, sb, 0, 0);
+        System.out.println(ans);
+    }
+
+    static void find(int depth, StringBuilder str, int vowCnt, int consCnt) {
+        if(depth > 2 && str.charAt(depth - 1) == str.charAt(depth - 2) && str.charAt(depth - 1) == str.charAt(depth - 3)) return;
+        if(depth == str.length()) {
+            if(lNum == 0 && consCnt == 0) return;
+            long cnt = 1;
+            if(lNum > 0) {
+                for(int i=0; i < idx; i++) {
+                    if(str.charAt(idxs[i]) == 'V') {
+                        cnt *= 5;
+                    } else {
+                        cnt *= 21;
+                    }
+                }
+            } else {
+                if(consCnt == 1) cnt *= (long) Math.pow(5, vowCnt);
+                else if(consCnt > 1) {
+                    cnt *= (long) Math.pow(21, consCnt) - (long) Math.pow(20, consCnt);
+                    if(vowCnt > 0) cnt *= (long) Math.pow(5, vowCnt);
+                }
+            }
+            ans += cnt;
+            return;
+        }
+
+        if(str.charAt(depth) == '_') {
+            str.setCharAt(depth, 'C');
+            find(depth + 1, str, vowCnt, consCnt + 1);
+            str.setCharAt(depth, '_');
+            str.setCharAt(depth, 'V');
+            find(depth + 1, str, vowCnt + 1, consCnt);
+            str.setCharAt(depth, '_');
+        } else {
+            find(depth + 1, str, vowCnt, consCnt);
+        }
+    }
+
+    static boolean isVowel(char c) {
+        return c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
+    }
+}

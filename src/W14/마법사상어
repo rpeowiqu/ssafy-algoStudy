@@ -1,0 +1,79 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+import java.util.Arrays;
+
+class Main {
+    static int N, ans;
+    static int[][] desert;
+    static int[] dx = {-1, 0, 1, 0};
+    static int[] dy = {0, 1, 0, -1};
+    static int[] cur;
+    static boolean[][] visited;
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        N = Integer.parseInt(br.readLine());
+        desert = new int[N][N];
+        visited = new boolean[N][N];
+        cur = new int[3];
+        cur[0] = N / 2;
+        cur[1] = N / 2;
+        ans = 0;
+        visited[cur[0]][cur[1]--] = true;
+
+        for(int i=0; i < N; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for(int j=0; j < N; j++) {
+                desert[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
+
+        while(check(cur[0], cur[1])) {
+            visited[cur[0]][cur[1]] = true;
+            scatter(desert[cur[0]][cur[1]]);
+            if(!visited[cur[0] + dy[(cur[2] + 1) % 4]][cur[1] + dx[(cur[2] + 1) % 4]]) cur[2] = (cur[2] + 1) % 4;
+            cur[0] += dy[cur[2]];
+            cur[1] += dx[cur[2]];
+        }
+
+        System.out.println(ans);
+    }
+
+    static void scatter(int num) {
+        desert[cur[0]][cur[1]] = 0;
+        int[] front = {cur[0] + dy[cur[2]], cur[1] + dx[cur[2]]};
+        int[] values = getValues(num);
+        int[] left = {cur[0] + dy[(cur[2] + 1) % 4], cur[1] + dx[(cur[2] + 1) % 4]};
+        int[] right = {cur[0] + dy[(cur[2] + 3) % 4], cur[1] + dx[(cur[2] + 3) % 4]};
+        if(check(left[0], left[1])) desert[left[0]][left[1]] += values[3];
+        else ans += values[3];
+        if(check(right[0], right[1])) desert[right[0]][right[1]] += values[3];
+        else ans += values[3];
+        if(check(left[0] + dy[(cur[2] + 2) % 4], left[1] + dx[(cur[2] + 2) % 4])) desert[left[0] + dy[(cur[2] + 2) % 4]][left[1] + dx[(cur[2] + 2) % 4]] += values[0];
+        else ans += values[0];
+        if(check(right[0] + dy[(cur[2] + 2) % 4], right[1] + dx[(cur[2] + 2) % 4])) desert[right[0] + dy[(cur[2] + 2) % 4]][right[1] + dx[(cur[2] + 2) % 4]] += values[0];
+        else ans += values[0];
+        if(check(left[0] + dy[(cur[2] + 1) % 4], left[1] + dx[(cur[2] + 1) % 4])) desert[left[0] + dy[(cur[2] + 1) % 4]][left[1] + dx[(cur[2] + 1) % 4]] += values[1];
+        else ans += values[1];
+        if(check(right[0] + dy[(cur[2] + 3) % 4], right[1] + dx[(cur[2] + 3) % 4])) desert[right[0] + dy[(cur[2] + 3) % 4]][right[1] + dx[(cur[2] + 3) % 4]] += values[1];
+        else ans += values[1];
+        if(check(left[0] + dy[cur[2]], left[1] + dx[cur[2]])) desert[left[0] + dy[cur[2]]][left[1] + dx[cur[2]]] += values[4];
+        else ans += values[4];
+        if(check(right[0] + dy[cur[2]], right[1] + dx[cur[2]])) desert[right[0] + dy[cur[2]]][right[1] + dx[cur[2]]] += values[4];
+        else ans += values[4];
+        if(check(front[0], front[1])) desert[front[0]][front[1]] += num - 2 * values[0] - 2 * values[1] - values[2] - 2 * values[3] - 2 * values[4];
+        else ans += num - 2 * values[0] - 2 * values[1] - values[2] - 2 * values[3] - 2 * values[4];
+        if(check(front[0] + dy[cur[2]], front[1] + dx[cur[2]])) desert[front[0] + dy[cur[2]]][front[1] + dx[cur[2]]] += values[2];
+        else ans += values[2];
+    }
+
+    static int[] getValues(int num) {
+        return new int[] {(int) (num * 0.01), (int) (num * 0.02), (int) (num * 0.05), (int) (num * 0.07), (int) (num * 0.1)};
+    }
+
+    static boolean check(int y, int x) {
+        return y >= 0 && y < N && x >= 0 && x < N;
+    }
+}

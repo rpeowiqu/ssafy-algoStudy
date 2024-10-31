@@ -1,0 +1,90 @@
+import java.io.IOException;
+
+class Main {
+    private static byte[] buffer = new byte[1 << 16];
+    private static int bufferPointer = 0, bytesRead = 0;
+
+    private static int read() throws IOException {
+        if (bufferPointer == bytesRead) {
+            bufferPointer = 0;
+            bytesRead = System.in.read(buffer);
+            if (bytesRead == -1) return -1;
+        }
+        return buffer[bufferPointer++];
+    }
+    
+    private static String readLine() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int c = read();
+
+        while (c != -1 && c != '\n' && c != '\r') {
+            sb.append((char) c);
+            c = read();
+        }
+
+        if (c == '\r') {
+            c = read();
+            if (c != '\n' && c != -1) bufferPointer--;
+        }
+    
+        return sb.toString();
+    }
+
+    private static int readNum() throws IOException {
+        int result = 0;
+        int c = read();
+        
+        while (c <= ' ') c = read();
+
+        boolean negative = (c == '-');
+        if (negative) c = read();
+
+        do {
+            result = result * 10 + (c - '0');
+            c = read();
+        } while (c >= '0' && c <= '9');
+        
+        return negative ? -result : result;
+    }
+    
+    public static void main(String[] args) throws Exception {
+        int N = readNum();
+        int K = readNum();
+        int[] cur = new int[2];
+        long ans = 1L;
+        long[] numbers = new long[2 * N];
+        numbers[1] = 1;
+        
+        for(int i=2; i < 2 * N; i++) {
+            if(i < N) numbers[i] = numbers[i - 1] + i;
+            else numbers[i] = numbers[i - 1] + 2 * N - i;
+        }
+        
+        String move = readLine();
+        for(int i=0; i < K; i++) {
+            switch(move.charAt(i)) {
+                case 'U':
+                    cur[0]--;
+                    break;
+                case 'D':
+                    cur[0]++;
+                    break;
+                case 'L':
+                    cur[1]--;
+                    break;
+                case 'R':
+                    cur[1]++;
+                    break;
+            }
+            int idx = cur[0] + cur[1];
+            if(idx < N) {
+                if(idx % 2 == 0) ans += numbers[idx] + 1 + cur[1];
+                else ans += numbers[idx] + 1 + cur[0];
+            } else {
+                if(idx % 2 == 0) ans += numbers[idx] + N - cur[0];
+                else ans += numbers[idx] + N - cur[1];
+            }
+        }
+        System.out.println(ans);
+    }
+}

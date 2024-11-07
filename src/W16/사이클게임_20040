@@ -1,0 +1,53 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class Main {
+    static int[] parent, rank;
+    static int N, M;
+    
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        parent = new int[N];
+        rank = new int[N];
+        for(int i=0; i < N; i++) {
+            parent[i] = i;
+            rank[i] = 1;
+        }
+
+        for(int i=0; i < M; i++) { // 어차피 M번 연결 가능하므로
+            st = new StringTokenizer(br.readLine());
+            if(union(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()))) { // 만약 사이클이 완성되면
+                System.out.println(i + 1); // 출력하고
+                return; // 리턴
+            }
+        }
+
+        System.out.println(0); // 사이클이 완성되지 않았으면 0 출력
+    }
+
+    static boolean union(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if(a == b) return true;
+
+        if(rank[a] >= b) {
+            rank[a] += rank[b];
+            parent[b] = parent[a];
+        } else {
+            rank[b] += rank[a];
+            parent[a] = parent[b];
+        }
+        
+        return false;
+    }
+
+    static int find(int a) {
+        if(parent[a] == a) return a;
+        return parent[a] = find(parent[a]);
+    }
+}

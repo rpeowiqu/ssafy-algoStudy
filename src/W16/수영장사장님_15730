@@ -1,0 +1,59 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class Main {
+    static int N, M, ans;
+    static int[][] ground, compArr; // 필드 ground와 물 채울 배열 compArr
+    static int[] dx = {0, 1, 0, -1};
+    static int[] dy = {1, 0, -1, 0};
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        ans = 0;
+        ground = new int[N + 2][M + 2]; // 물이 밖으로 흘러내리는걸 표현하기 위해 [N + 2][M + 2]
+        compArr = new int[N + 2][M + 2];
+        for(int i=1; i < N + 1; i++) {
+            st = new StringTokenizer(br.readLine());
+            for(int j=1; j < M + 1; j++) {
+                ground[i][j] = Integer.parseInt(st.nextToken());
+                compArr[i][j] = Integer.MAX_VALUE;
+            }
+        }
+
+        fill();
+        System.out.println(ans);
+    }
+
+    static void fill() {
+        boolean finish = false;
+        while(!finish) {
+            finish = true;
+            for(int i=1; i < N + 1; i++) {
+                for(int j=1; j < M + 1; j++) {
+                    if(ground[i][j] == compArr[i][j]) continue; // 안 되는 곳은 지나치기
+                    int min = Integer.MAX_VALUE;
+                    for(int k=0; k < 4; k++) {
+                        int ny = i + dy[k];
+                        int nx = j + dx[k];
+                        if(min > compArr[ny][nx]) min = compArr[ny][nx]; // 채울 수 있는 높이 체크
+                    }
+                    if(compArr[i][j] > min) { // compArr에 채울 수 있는 높이 갱신
+                        compArr[i][j] = ground[i][j] > min ? ground[i][j] : min; // 만약 옆 높이보다 내 위치 높이가 높으면 내 위치 높이로 갱신
+                        finish = false;
+                    }
+                }
+            }
+        }
+
+        for(int i=1; i < N + 1; i++) {
+            for(int j=1; j < M + 1; j++) {
+                ans += compArr[i][j] - ground[i][j]; // compArr는 채울 수 있는 높이거나 그 자리 높이로 채워져 있으므로 계산
+            }
+        }
+    }
+}

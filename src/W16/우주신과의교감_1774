@@ -1,0 +1,106 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
+
+class Main {
+    static class Connection implements Comparable<Connection> {
+        int from, to;
+        double dis;
+
+        Connection(int from, int to, double dis) {
+            this.from = from; // 내 번호
+            this.to = to; // 연결된 번호
+            this.dis = dis; // 거리
+        }
+
+        @Override
+        public int compareTo(Connection c) {
+            return Double.compare(dis, c.dis);
+        }
+    }
+    
+    static int N, M, conCnt; // conCnt 쓰면 틀림
+    static double ans; // 길이 저장
+    static int[] parent, rank;
+    static int[][] idxs; // 위치
+    static PriorityQueue<Connection> pq;
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        idxs = new int[N][2];
+        parent = new int[N];
+        rank = new int[N];
+        ans = 0;
+        conCnt = 0;
+        pq = new PriorityQueue<Connection>();
+
+        for(int i=0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
+            idxs[i][0] = Integer.parseInt(st.nextToken());
+            idxs[i][1] = Integer.parseInt(st.nextToken());
+            parent[i] = i;
+            rank[i] = 1;
+        }
+
+        for(int i=0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int from = Integer.parseInt(st.nextToken()) - 1;
+            int to = Integer.parseInt(st.nextToken()) - 1;
+            union(from, to); // 이미 연결된 부분 연결
+            conCnt++; // 안 씀
+        }
+
+        for(int i=0; i < N; i++) {
+            for(int j=i + 1; j < N; j++) {
+                pq.offer(new Connection(i, j, distance(i, j))); // 모든 연결 넣기
+            }
+        }
+
+        connect();
+        System.out.printf("%.2f", ans);
+    }
+
+    static void connect() {
+        while(!pq.isEmpty()) {
+            Connection cur = pq.poll();
+            if(union(cur.from, cur.to)) { // 연결 안 된 경우 연결
+                ans += cur.dis; // 길이 추가
+                conCnt++; // 안 씀
+            }
+            // 여기에 conCnt == N - 1이면 return 했는데 질문게시판에
+            // 뭐 spanning tree라는 조건이 없어서 이미 연결된 사이클이 있을수도 있어서
+            // 그 조건 넣으면 틀림
+        }
+    }
+
+    static double distance(int a, int b) { // 거리 반환하는 메서드
+        long deltaY = idxs[a][0] - idxs[b][0];
+        long deltaX = idxs[a][1] - idxs[b][1];
+        return Math.sqrt(deltaY * deltaY + deltaX * deltaX);
+    }
+
+    static boolean union(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if(a == b) return false;
+
+        if(rank[a] >= rank[b]) {
+            rank[a] += rank[b];
+            parent[b] = parent[a];
+        } else {
+            rank[b] += rank[a];
+            parent[a] = parent[b];
+        }
+        return true;
+    }
+
+    static int find(int a) {
+        if(parent[a] == a) return a;
+        return parent[a] = find(parent[a]);
+    }
+}
